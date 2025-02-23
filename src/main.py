@@ -19,13 +19,13 @@ def get_info(id):
     return info,playlist
 
 
-def record(id):
+def record(id, title):
     if os.path.exists('../status/already.json'):
         with open('../status/already.json') as json_file:
             already=json.load(json_file)
     else:
         already=list()
-    already.append(id)
+    already.append(f'{id}:{title}')
     with open('../status/already.json', 'w', encoding='utf-8') as json_file:
             json.dump(todo, json_file, ensure_ascii=False, indent=4)
 
@@ -81,7 +81,7 @@ if __name__ == '__main__':
                         todo.remove(id)
                         with open('../status/todo.json', 'w', encoding='utf-8') as json_file:
                             json.dump(todo, json_file, ensure_ascii=False, indent=4)
-                        record(id)
+                        record(id, title)
                     with open(f'../status/{id}_video.json', 'w', encoding='utf-8') as json_file:
                         json.dump(video_hashtable, json_file, ensure_ascii=False, indent=4)
         except BaseException as e:
