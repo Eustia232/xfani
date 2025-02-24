@@ -1,21 +1,25 @@
-from selenium import webdriver
-from selenium.webdriver.edge.options import Options
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+import json
+import os
+
 from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.edge.options import Options
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 
 def get_info_and_playlist(url):
     """
-
-    :param url(str):视频页信息
-    :return:info_and_play_list(list):一个二元列表，前者是info(dict)，后者是集数列表(list)
+    从指定视频页url中获取信息和播放列表集合。
+    :param url(str):视频页信息地址
+    :return:info_and_play_list(list):一个二元列表，前者是info(dict)，后者是播放列表(list)
     """
 
     def get_html(url):
         """
-
+        从制定url中获取html页面。获取的不是完整的html，通过selenium库，获取到想要的元素之后便不在获取。
+        这个函数获取的html信息包含目前需要的所有视频信息。
         :param url(str)
         :return: html(str)
         """
@@ -32,9 +36,8 @@ def get_info_and_playlist(url):
         driver.get(url)
 
         # 等待页面加载完成，例如等待某个元素加载出来（可以根据你网页的结构更改元素）
-        WebDriverWait(driver, 20).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "cor5"))  # 根据实际页面元素修改
-        )
+        WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CLASS_NAME, "cor5"))  # 根据实际页面元素修改
+                                        )
         # 获取页面 HTML
         html = driver.page_source
 
@@ -45,9 +48,9 @@ def get_info_and_playlist(url):
 
     def match_playlist(html):
         """
-
-        :param html(str)
-        :return: play_list(list):
+        从html页面获取播放列表
+        :param html(str):
+        :return: play_list(list):播放列表
         """
 
         # 解析 HTML 内容
@@ -69,10 +72,30 @@ def get_info_and_playlist(url):
     title = title_element.text
     info['title'] = title
     score_element = soup.find('div', class_='fraction')
-    score=score_element.text
-    info['score']=score
+    score = score_element.text
+    info['score'] = score
     play_list = match_playlist(html)
     return info, play_list
+
+
+def get_info(id):
+    """
+    从本地资源获取信息。；
+    如果本地不存在信息，调用get_info_and_playlist函数。
+    :param id: 网站上的if
+    :return: info(dict)，playlist(list)
+    """
+
+    if os.path.exists(f'../status/{id}_info.json'):
+        with open(f'../status/{id}_info.json', 'r', encoding='utf-8') as json_file:
+            info, playlist = json.load(json_file)
+    else:
+        print('正在获取标题和集数信息')
+        url = f'https://dick.xfani.com/bangumi/{id}.html'
+        info, playlist = get_info_and_playlist(url)
+        with open(f'../status/{id}_info.json', 'w', encoding='utf-8') as json_file:
+            json.dump((info, playlist), json_file, ensure_ascii=False, indent=4)
+    return info, playlist
 
 
 if __name__ == '__main__':

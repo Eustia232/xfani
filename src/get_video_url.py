@@ -1,9 +1,10 @@
-from selenium import webdriver
-from selenium.webdriver.edge.options import Options
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 import re
+
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.edge.options import Options
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 
 def get_video_url(url):
@@ -59,7 +60,7 @@ def get_video_url(url):
         # 输出匹配结果
         return matches[0]
 
-    if url!=None:
+    if url != None:
         html = get_html(url)
         video_url = match_video_url(html)
         return video_url
