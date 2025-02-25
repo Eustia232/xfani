@@ -86,14 +86,14 @@ def get_info(id):
     :return: info(dict)，playlist(list)
     """
 
-    if os.path.exists(f'../status/{id}_info.json'):
-        with open(f'../status/{id}_info.json', 'r', encoding='utf-8') as json_file:
+    if os.path.exists(f'../cache/{id}_info.json'):
+        with open(f'../cache/{id}_info.json', 'r', encoding='utf-8') as json_file:
             info, playlist = json.load(json_file)
     else:
         print('正在获取标题和集数信息')
         url = f'https://dick.xfani.com/bangumi/{id}.html'
         info, playlist = get_info_and_playlist(url)
-        with open(f'../status/{id}_info.json', 'w', encoding='utf-8') as json_file:
+        with open(f'../cache/{id}_info.json', 'w', encoding='utf-8') as json_file:
             json.dump((info, playlist), json_file, ensure_ascii=False, indent=4)
     return info, playlist
 

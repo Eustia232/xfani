@@ -30,8 +30,8 @@ if __name__ == '__main__':
                 with open(f'D:/Downloads/Video/{title}/评分：{score}.txt', "w", encoding='utf-8'):
                     pass
             # 要确保哈希表的键是str类型。即使是int类型，在保存到json文件时也会被强制转化为str类型。
-            if os.path.exists(f'../status/{id}_video.json'):
-                with open(f'../status/{id}_video.json', 'r', encoding='utf-8') as json_file:
+            if os.path.exists(f'../cache/{id}_video.json'):
+                with open(f'../cache/{id}_video.json', 'r', encoding='utf-8') as json_file:
                     video_hashtable = json.load(json_file)
             else:
                 video_hashtable = dict()
@@ -46,7 +46,7 @@ if __name__ == '__main__':
                     url = f'https://dick.xfani.com/watch/{id}/1/{i}.html'
                     video_url = get_video_url(url)
                     video_hashtable[str(i)] = video_url
-                    with open(f'../status/{id}_video.json', 'w', encoding='utf-8') as json_file:
+                    with open(f'../cache/{id}_video.json', 'w', encoding='utf-8') as json_file:
                         json.dump(video_hashtable, json_file, ensure_ascii=False, indent=4)
 
                 filename = f'D:/Downloads/Video/{title}/{title + item}.mp4'
@@ -59,7 +59,7 @@ if __name__ == '__main__':
                         todo.remove(id)
                         with open('../status/todo.json', 'w', encoding='utf-8') as json_file:
                             json.dump(todo, json_file, ensure_ascii=False, indent=4)
-                    with open(f'../status/{id}_video.json', 'w', encoding='utf-8') as json_file:
+                    with open(f'../cache/{id}_video.json', 'w', encoding='utf-8') as json_file:
                         json.dump(video_hashtable, json_file, ensure_ascii=False, indent=4)
                     record(id, title)
         except KeyboardInterrupt as e:
