@@ -10,10 +10,14 @@ def remove_files():
             id = item.split(':')[0]
             try:
                 os.remove(f'../cache/{id}_video.json')
+                print(f'删除了{item}')
+            except FileNotFoundError as e:
+                pass
+            try:
                 os.remove(f'../cache/{id}_info.json')
                 print(f'删除了{item}')
             except FileNotFoundError as e:
-                print(str(e))
+                pass
 
 
 if __name__ == '__main__':

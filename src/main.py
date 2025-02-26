@@ -7,6 +7,12 @@ from get_video_url import get_video_url
 from record import record
 
 if __name__ == '__main__':
+
+    with open('../status/download_config.json', 'r') as f:
+        config = json.load(f)
+        path = config['path']
+    
+    
     if os.path.exists('../status/todo.json'):
         with open('../status/todo.json') as json_file:
             todo = json.load(json_file)
@@ -24,10 +30,10 @@ if __name__ == '__main__':
             info, playlist = get_info(id)
             title = info['title']
             print(f'名称为{title}')
-            os.makedirs(f'D:/Downloads/Video/{title}', exist_ok=True)
+            os.makedirs(f'{path}/{title}', exist_ok=True)
             score = info['score']
-            if not os.path.exists(f'D:/Downloads/Video/{title}/评分：{score}.txt'):
-                with open(f'D:/Downloads/Video/{title}/评分：{score}.txt', "w", encoding='utf-8'):
+            if not os.path.exists(f'{path}/{title}/评分：{score}.txt'):
+                with open(f'{path}/{title}/评分：{score}.txt', "w", encoding='utf-8'):
                     pass
             # 要确保哈希表的键是str类型。即使是int类型，在保存到json文件时也会被强制转化为str类型。
             if os.path.exists(f'../cache/{id}_video.json'):
@@ -49,7 +55,7 @@ if __name__ == '__main__':
                     with open(f'../cache/{id}_video.json', 'w', encoding='utf-8') as json_file:
                         json.dump(video_hashtable, json_file, ensure_ascii=False, indent=4)
 
-                filename = f'D:/Downloads/Video/{title}/{title + item}.mp4'
+                filename = f'{path}/{title}/{title + item}.mp4'
                 if f'{i}_success' not in video_hashtable:
                     print(f'正在下载{i}:{item}')
                     download_video(video_url, filename)
