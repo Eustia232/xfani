@@ -65,9 +65,10 @@ if __name__ == '__main__':
                         todo.remove(id)
                         with open('../status/todo.json', 'w', encoding='utf-8') as json_file:
                             json.dump(todo, json_file, ensure_ascii=False, indent=4)
+                        record(id, title)
                     with open(f'../cache/{id}_video.json', 'w', encoding='utf-8') as json_file:
                         json.dump(video_hashtable, json_file, ensure_ascii=False, indent=4)
-                    record(id, title)
+
         except KeyboardInterrupt as e:
             print("用户主动停止")
             break
