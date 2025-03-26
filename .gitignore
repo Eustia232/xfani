@@ -5,3 +5,4 @@ cache/*
 status/*
 !status/already.json
 !status/download_config.json
+t
