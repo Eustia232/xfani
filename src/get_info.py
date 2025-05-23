@@ -2,6 +2,7 @@ import json
 import os
 
 from bs4 import BeautifulSoup
+from fake_useragent import UserAgent
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.edge.options import Options
@@ -26,6 +27,8 @@ def get_info_and_playlist(url):
         # 配置 Edge 浏览器选项
         options = Options()
         options.use_chromium = True
+        ua = UserAgent()
+        options.add_argument(f"user-agent={ua.random}")
         options.add_argument('--headless')  # 启用无头模式
         options.add_argument('--disable-gpu')  # 禁用 GPU
 
@@ -71,8 +74,9 @@ def get_info_and_playlist(url):
     title_element = soup.find('h3', class_='slide-info-title hide')
     title = title_element.text
     info['title'] = title
-    score_element = soup.find('div', class_='fraction')
-    score = score_element.text
+    fraction_element = soup.find('div', class_='fraction')
+    score_element = soup.find('em', class_='score cor2')
+    score = fraction_element.text if score_element.text == 0.0 else score_element.text
     info['score'] = score
     play_list = match_playlist(html)
     return info, play_list
@@ -99,5 +103,5 @@ def get_info(id):
 
 
 if __name__ == '__main__':
-    url = 'https://dick.xfani.com/bangumi/1917.html'
+    url = 'https://dick.xfani.com/bangumi/2162.html'
     print(get_info_and_playlist(url))

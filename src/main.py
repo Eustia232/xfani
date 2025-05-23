@@ -1,7 +1,7 @@
 import json
 import os
 
-from download import download_video
+from download import download_video, DownloadSpeedTooLowException
 from get_info import get_info
 from get_video_url import get_video_url
 from record import record
@@ -14,26 +14,42 @@ if __name__ == '__main__':
     
     
     if os.path.exists('../status/todo.json'):
-        with open('../status/todo.json') as json_file:
+        with open('../status/todo.json', 'r', encoding='utf-8') as json_file:
             todo = json.load(json_file)
     else:
         todo = list()
         with open('../status/todo.json', 'w', encoding='utf-8') as json_file:
             json.dump(todo, json_file, ensure_ascii=False, indent=4)
 
+    if os.path.exists('../status/todo2.json'):
+        with open('../status/todo2.json') as json_file:
+            todo2 = json.load(json_file)
+            todo.extend(todo2)
+            todo2.clear()
+        with open('../status/todo.json', 'w', encoding='utf-8') as json_file:
+            json.dump(todo, json_file, ensure_ascii=False, indent=4)
+        with open('../status/todo2.json', 'w', encoding='utf-8') as json_file:
+            json.dump(todo2, json_file, ensure_ascii=False, indent=4)
+
+
     # 获取title，playlist，更新在status
+
+    try_time = 0
 
     while todo:
         try:
-            id = todo[0]
+            todo_num= len(todo)
+            index=try_time%todo_num
+            id = todo[index]
             print(f'获取id为{id}')
             info, playlist = get_info(id)
             title = info['title']
+            title_path=title.replace("/","-")
             print(f'名称为{title}')
-            os.makedirs(f'{path}/{title}', exist_ok=True)
+            os.makedirs(f'{path}/{title_path}', exist_ok=True)
             score = info['score']
-            if not os.path.exists(f'{path}/{title}/评分：{score}.txt'):
-                with open(f'{path}/{title}/评分：{score}.txt', "w", encoding='utf-8'):
+            if not os.path.exists(f'{path}/{title_path}/评分：{score}.txt'):
+                with open(f'{path}/{title_path}/评分：{score}.txt', "w", encoding='utf-8'):
                     pass
             # 要确保哈希表的键是str类型。即使是int类型，在保存到json文件时也会被强制转化为str类型。
             if os.path.exists(f'../cache/{id}_video.json'):
@@ -55,7 +71,7 @@ if __name__ == '__main__':
                     with open(f'../cache/{id}_video.json', 'w', encoding='utf-8') as json_file:
                         json.dump(video_hashtable, json_file, ensure_ascii=False, indent=4)
 
-                filename = f'{path}/{title}/{title + item}.mp4'
+                filename = f'{path}/{title_path}/{title_path + item}.mp4'
                 if f'{i}_success' not in video_hashtable:
                     print(f'正在下载{i}:{item}')
                     download_video(video_url, filename)
@@ -76,3 +92,7 @@ if __name__ == '__main__':
             print(f"异常类型: {type(e)}")
 
             print(f"异常信息: {str(e)}")
+        except DownloadSpeedTooLowException as e:
+            print(e)
+        finally:
+            try_time += 1

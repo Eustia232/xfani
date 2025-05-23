@@ -1,5 +1,6 @@
 import re
 
+from fake_useragent import UserAgent
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.edge.options import Options
@@ -23,6 +24,8 @@ def get_video_url(url):
         # 配置 Edge 浏览器选项
         options = Options()
         options.use_chromium = True
+        ua = UserAgent()
+        options.add_argument(f"user-agent={ua.random}")
         options.add_argument('--headless')  # 启用无头模式
         options.add_argument('--disable-gpu')  # 禁用 GPU
 
