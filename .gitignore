@@ -1,0 +1,7 @@
+test.*
+.idea
+__pycache__
+cache/*
+status/*
+!status/already.json
+!status/download_config.json
